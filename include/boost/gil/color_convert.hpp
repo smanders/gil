@@ -245,42 +245,41 @@ struct default_color_converter_impl<cmyk_t,gray_t> {
 
 namespace detail {
 
-template <typename Pixel>
-auto alpha_or_max_impl(Pixel const& p, std::true_type) -> typename channel_type<Pixel>::type
+template <typename DstChannelRef, typename Pixel>
+void set_alpha_or_max_impl(DstChannelRef dst, Pixel const& src, std::true_type)
 {
-    return get_color(p,alpha_t());
+    dst = channel_convert<DstChannelRef>(get_color(src,alpha_t()));
 }
-template <typename Pixel>
-auto alpha_or_max_impl(Pixel const&, std::false_type) -> typename channel_type<Pixel>::type
+template <typename DstChannelRef, typename Pixel>
+void set_alpha_or_max_impl(DstChannelRef dst, Pixel const&, std::false_type)
 {
-    return channel_traits<typename channel_type<Pixel>::type>::max_value();
+    dst = channel_traits<DstChannelRef>::max_value();
 }
 
 } // namespace detail
 
-// Returns max_value if the pixel has no alpha channel. Otherwise returns the alpha.
-template <typename Pixel>
-auto alpha_or_max(Pixel const& p) -> typename channel_type<Pixel>::type
+// Assign max_value to 'dst' if the pixel has no alpha channel. Otherwise assign the channel-converted alpha.
+template <typename DstChannelRef, typename Pixel>
+void set_alpha_or_max(DstChannelRef dst, Pixel const& src)
 {
-    return detail::alpha_or_max_impl(
-        p,
-        mp11::mp_contains<typename color_space_type<Pixel>::type, alpha_t>());
+    detail::set_alpha_or_max_impl<DstChannelRef>(dst,
+        src,
+        contains_color<Pixel,alpha_t>());
 }
 
 
 /// \ingroup ColorConvert
-/// \brief Converting any pixel type to RGBA. Note: Supports homogeneous pixels only.
+/// \brief Converting any pixel type to RGBA.
 template <typename C1>
 struct default_color_converter_impl<C1,rgba_t> {
     template <typename P1, typename P2>
     void operator()(const P1& src, P2& dst) const {
-        using T2 = typename channel_type<P2>::type;
-        pixel<T2,rgb_layout_t> tmp;
+        P2 tmp;
         default_color_converter_impl<C1,rgb_t>()(src,tmp);
         get_color(dst,red_t())  =get_color(tmp,red_t());
         get_color(dst,green_t())=get_color(tmp,green_t());
         get_color(dst,blue_t()) =get_color(tmp,blue_t());
-        get_color(dst,alpha_t())=channel_convert<T2>(alpha_or_max(src));
+        set_alpha_or_max<typename color_element_reference_type<P2,alpha_t>::type>(get_color(dst,alpha_t()), src);
     }
 };
 
