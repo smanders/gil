@@ -263,8 +263,8 @@ struct channel_converter_unsigned_integral_nondivisible<SrcChannelV, DstChannelV
     {
         using dest_t = typename base_channel_type<DstChannelV>::type;
         return DstChannelV(
-            static_cast<dest_t>(src * unsigned_integral_max_value<DstChannelV>::value)
-            / unsigned_integral_max_value<SrcChannelV>::value);
+            static_cast<dest_t>(src * unsigned_integral_max_value<DstChannelV>::value
+            / unsigned_integral_max_value<SrcChannelV>::value));
     }
 };
 
