@@ -291,15 +291,15 @@ template <typename SrcChannelV, typename DstChannelV, bool CannotFit>
 struct channel_converter_unsigned_integral_nondivisible<SrcChannelV,DstChannelV,false,CannotFit> {
     DstChannelV operator()(SrcChannelV src) const {
 
-        using src_integer_t = typename detail::unsigned_integral_max_value<SrcChannelV>::value_type;
-        using dst_integer_t = typename detail::unsigned_integral_max_value<DstChannelV>::value_type;
+        using src_integer_t = typename base_channel_type<SrcChannelV>::type;
+        using dst_integer_t = typename base_channel_type<DstChannelV>::type;
 
         static const double div = unsigned_integral_max_value<SrcChannelV>::value
                                 / static_cast< double >( unsigned_integral_max_value<DstChannelV>::value );
 
-        static const src_integer_t div2 = static_cast< src_integer_t >( div / 2.0 );
+        static const src_integer_t div2 = static_cast< src_integer_t >( div / 2 );
 
-        return DstChannelV( static_cast< dst_integer_t >(( static_cast< double >( src + div2 ) / div )));
+        return DstChannelV( static_cast< dst_integer_t >(( src + div2 ) / div ));
     }
 };
 
