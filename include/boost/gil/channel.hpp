@@ -501,6 +501,7 @@ public:
 
     const packed_channel_reference& operator=(const mutable_reference& ref) const { set_from_reference(ref.get_data()); return *this; }
     const packed_channel_reference& operator=(const const_reference&   ref) const { set_from_reference(ref.get_data()); return *this; }
+    const packed_channel_reference& operator=(const packed_channel_value<NumBits>& val) const { set_unsafe(val); return *this; }
 
     template <bool Mutable1>
     const packed_channel_reference& operator=(const packed_dynamic_channel_reference<BitField,NumBits,Mutable1>& ref) const { set_unsafe(ref.get()); return *this; }
