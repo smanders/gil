@@ -456,7 +456,7 @@ class packed_channel_reference<BitField, FirstBit, NumBits, false>
 
     friend class packed_channel_reference<BitField, FirstBit, NumBits, true>;
 
-    static const BitField channel_mask = static_cast<BitField>(parent_t::max_val) << FirstBit;
+    static const BitField channel_mask = static_cast<BitField>(parent_t::max_val << FirstBit );
 
     void operator=(packed_channel_reference const&);
 public:
@@ -482,7 +482,7 @@ class packed_channel_reference<BitField,FirstBit,NumBits,true>
     using parent_t = detail::packed_channel_reference_base<packed_channel_reference<BitField,FirstBit,NumBits,true>,BitField,NumBits,true>;
     friend class packed_channel_reference<BitField,FirstBit,NumBits,false>;
 
-    static const BitField channel_mask = static_cast< BitField >( parent_t::max_val ) << FirstBit;
+    static const BitField channel_mask = static_cast< BitField >( parent_t::max_val << FirstBit );
 
 public:
     using const_reference = packed_channel_reference<BitField,FirstBit,NumBits,false> const;
